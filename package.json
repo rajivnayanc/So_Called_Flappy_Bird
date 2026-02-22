@@ -1,0 +1,28 @@
+{
+  "name": "so_called_flappy_bird",
+  "version": "1.0.0",
+  "description": "Genetic Algorithm and Neural Network based automatic game-play agent for Flappy Bird",
+  "main": "main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rajivnayanc/So_Called_Flappy_Bird.git"
+  },
+  "author": "rajivnayanc",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rajivnayanc/So_Called_Flappy_Bird/issues"
+  },
+  "homepage": "https://github.com/rajivnayanc/So_Called_Flappy_Bird#readme",
+  "dependencies": {
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.1.4",
+    "vite": "^7.3.1"
+  }
+}
