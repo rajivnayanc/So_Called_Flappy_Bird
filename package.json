@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/rajivnayanc/So_Called_Flappy_Bird#readme",
   "dependencies": {
+    "mathjs": "^15.1.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   },
