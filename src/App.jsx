@@ -13,6 +13,7 @@ const App = () => {
   const [score, setScore] = useState(0);
   const [bestPlayScore, setBestPlayScore] = useState(0);
   const [bestTrainScore, setBestTrainScore] = useState(0);
+  const [aiThreshold, setAiThreshold] = useState(0.5); // '0.5', '0.7', '0.9'
   const [generation, setGeneration] = useState(1);
 
   // Load best scores on mount
@@ -100,7 +101,7 @@ const App = () => {
     manager.onNewGeneration = (deadBirds) => {
       setGeneration(prev => prev + 1);
       const nextGenPopulation = nextGeneration(deadBirds);
-      manager.init(nextGenPopulation);
+      manager.init(nextGenPopulation, false, aiThreshold);
     };
 
     manager.onTrainScoreChange = (newBest) => {
@@ -124,7 +125,7 @@ const App = () => {
       setGeneration(1);
     }
 
-    managerRef.current.init(null, mode === 'PLAY' ? playAgainstAI : false);
+    managerRef.current.init(null, mode === 'PLAY' ? playAgainstAI : false, aiThreshold);
     managerRef.current.start();
   };
 
@@ -188,6 +189,19 @@ const App = () => {
                     }
                   }} />
                   Compete against Best AI
+                </label>
+              </div>
+            )}
+
+            {mode === 'TRAIN' && (
+              <div className="ai-toggle">
+                <label>
+                  AI Threshold:
+                  <select value={aiThreshold} onChange={e => setAiThreshold(parseFloat(e.target.value))}>
+                    <option value={0.5}>Low (0.5)</option>
+                    <option value={0.7}>Medium (0.7)</option>
+                    <option value={0.9}>High (0.9)</option>
+                  </select>
                 </label>
               </div>
             )}

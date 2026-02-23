@@ -41,7 +41,7 @@ export class FlappyManager extends Engine {
         }
     }
 
-    init(population = null, playAgainstAI = false) {
+    init(population = null, playAgainstAI = false, aiThreshold = 0.5) {
         this.cleanup();
         this.clearEntities();
         this.birds = [];
@@ -60,11 +60,15 @@ export class FlappyManager extends Engine {
             if (playAgainstAI) {
                 const w1Str = localStorage.getItem('flappyBestW1');
                 const w2Str = localStorage.getItem('flappyBestW2');
+                const threshStr = localStorage.getItem('flappyBestThreshold');
+
                 if (w1Str && w2Str) {
                     try {
                         const w1 = JSON.parse(w1Str);
                         const w2 = JSON.parse(w2Str);
-                        const aiBird = new AIBird(this.width, this.height, w1, w2);
+                        const memoryThreshold = threshStr ? parseFloat(threshStr) : aiThreshold;
+
+                        const aiBird = new AIBird(this.width, this.height, w1, w2, memoryThreshold);
                         aiBird.color = 'rgba(150, 0, 255, 0.7)'; // Distinct purple opponent
                         aiBird.zIndex = 4;
                         this.birds.push(aiBird);
@@ -98,9 +102,9 @@ export class FlappyManager extends Engine {
             for (let i = 0; i < birdCount; i++) {
                 let aiBird;
                 if (population && population[i]) {
-                    aiBird = new AIBird(this.width, this.height, population[i].w1, population[i].w2);
+                    aiBird = new AIBird(this.width, this.height, population[i].w1, population[i].w2, aiThreshold);
                 } else {
-                    aiBird = new AIBird(this.width, this.height);
+                    aiBird = new AIBird(this.width, this.height, null, null, aiThreshold);
                 }
                 this.birds.push(aiBird);
                 this.addEntity(aiBird);
@@ -204,6 +208,7 @@ export class FlappyManager extends Engine {
                     localStorage.setItem('flappyAIBestScore', bestDead.score.toString());
                     localStorage.setItem('flappyBestW1', JSON.stringify(bestDead.w1));
                     localStorage.setItem('flappyBestW2', JSON.stringify(bestDead.w2));
+                    localStorage.setItem('flappyBestThreshold', bestDead.threshold.toString());
                     if (this.onTrainScoreChange) {
                         this.onTrainScoreChange(bestDead.score);
                     }

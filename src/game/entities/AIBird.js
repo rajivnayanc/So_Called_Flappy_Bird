@@ -3,11 +3,11 @@ import neural_network from '../utils/neural_network.js';
 import { rgba_val } from '../utils/utils.js';
 
 export class AIBird extends Bird {
-    threshold = 0.9;
-    constructor(canvasWidth, canvasHeight, w1 = null, w2 = null) {
+    constructor(canvasWidth, canvasHeight, w1 = null, w2 = null, threshold = 0.5) {
         super(canvasWidth, canvasHeight, rgba_val());
         this.zIndex = 5;
         this.label = 'AI';
+        this.threshold = threshold;
 
         this.x1 = 0;
         this.x2 = 0;
