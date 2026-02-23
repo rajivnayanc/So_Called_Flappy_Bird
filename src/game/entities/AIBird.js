@@ -3,6 +3,7 @@ import neural_network from '../utils/neural_network.js';
 import { rgba_val } from '../utils/utils.js';
 
 export class AIBird extends Bird {
+    threshold = 0.7;
     constructor(canvasWidth, canvasHeight, w1 = null, w2 = null) {
         super(canvasWidth, canvasHeight, rgba_val());
         this.zIndex = 5;
@@ -44,7 +45,7 @@ export class AIBird extends Bird {
         let pred = neural_network(this.x1, this.x2, this.w1, this.w2);
         // Handle mathjs matrix output
         let val = (pred._data) ? pred._data[0] : (Array.isArray(pred) ? pred[0] : pred);
-        if (val > 0.5) {
+        if (val > this.threshold) {
             this.flap();
         }
     }

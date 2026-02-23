@@ -38,18 +38,11 @@ const App = () => {
             }
           });
           setScore(currentScore);
-
-          if (currentScore > bestScore) {
-            setBestScore(currentScore);
-            if (mode === 'PLAY') {
-              localStorage.setItem('flappyBestScore', currentScore.toString());
-            }
-          }
         }
       }
     }, 100); // UI update rate
     return () => clearInterval(interval);
-  }, [gameState, bestScore, mode]);
+  }, [gameState, mode]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -90,10 +83,13 @@ const App = () => {
     manager.onGameOver = (finalScore) => {
       setGameState('GAMEOVER');
       setScore(finalScore);
-      if (finalScore > bestScore) {
-        setBestScore(finalScore);
-        localStorage.setItem('flappyBestScore', finalScore.toString());
-      }
+      setBestScore(prevBest => {
+        if (finalScore > prevBest) {
+          localStorage.setItem('flappyBestScore', finalScore.toString());
+          return finalScore;
+        }
+        return prevBest;
+      });
     };
 
     manager.onNewGeneration = (deadBirds) => {
