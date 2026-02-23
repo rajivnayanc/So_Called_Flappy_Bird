@@ -187,3 +187,34 @@ button.mode-btn:hover {
     margin-top: 20px;
     opacity: 0.8;
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+    .hud {
+        gap: 10px;
+        padding: 0 40px; /* Leave space for exit button */
+        flex-wrap: wrap;
+        top: 10px;
+    }
+
+    .hud-stat {
+        font-size: 1.2rem;
+    }
+
+    .exit-btn {
+        right: 10px;
+        top: 0px;
+        width: 32px;
+        height: 32px;
+        font-size: 1.2rem;
+    }
+
+    .panel {
+        min-width: 90%;
+        padding: 20px;
+    }
+
+    .panel h1 {
+        font-size: 2rem;
+    }
+}

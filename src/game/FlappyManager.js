@@ -3,14 +3,11 @@ import { Bird } from './entities/Bird.js';
 import { AIBird } from './entities/AIBird.js';
 import { Pipe } from './entities/Pipe.js';
 import { Cloud } from './entities/Cloud.js';
+import cloudPaths from './data/cloud_paths.json';
 
 export class FlappyManager extends Engine {
     constructor(canvas) {
         super(canvas);
-
-        // Native JavaScript Image loading
-        this.cloudImg = new Image();
-        this.cloudImg.src = `${import.meta.env.BASE_URL}cloud.png`;
 
         this.birds = [];
         this.pipes = [];
@@ -139,8 +136,12 @@ export class FlappyManager extends Engine {
         // Spawn Clouds
         if (timestamp - this.lastCloudTime > 1500) {
             let y = Math.random() * 400 + 50;
-            let width = Math.random() * 300 + 100;
-            let cloud = new Cloud(this.width, y, width, 8, this.cloudImg);
+            let width = Math.random() * 300 + 200; // Increased base size
+
+            // Select random cloud path
+            const cloudPathGroup = cloudPaths[Math.floor(Math.random() * cloudPaths.length)];
+
+            let cloud = new Cloud(this.width, y, width, 8, cloudPathGroup);
             this.clouds.push(cloud);
             this.addEntity(cloud);
             this.lastCloudTime = timestamp;
