@@ -25,6 +25,27 @@ export class FlappyManager extends Engine {
         this.onTick = (timestamp, ctx) => this.handleTick(timestamp, ctx);
     }
 
+    stop() {
+        if (this.mode === 'TRAIN' && this.birds.length > 0) {
+            // Find the best among alive and dead birds in the current run
+            const allBirds = [...this.birds, ...this.deadBirds];
+            if (allBirds.length > 0) {
+                const bestBird = allBirds.reduce((prev, current) => (prev.score > current.score) ? prev : current, { score: -1 });
+                const savedBest = parseInt(localStorage.getItem('flappyAIBestScore') || '0', 10);
+                if (bestBird.score >= savedBest && bestBird.w1) {
+                    localStorage.setItem('flappyAIBestScore', bestBird.score.toString());
+                    localStorage.setItem('flappyBestW1', JSON.stringify(bestBird.w1));
+                    localStorage.setItem('flappyBestW2', JSON.stringify(bestBird.w2));
+                    localStorage.setItem('flappyBestThreshold', bestBird.threshold.toString());
+                    if (this.onTrainScoreChange) {
+                        this.onTrainScoreChange(bestBird.score);
+                    }
+                }
+            }
+        }
+        super.stop();
+    }
+
     setMode(mode) {
         this.mode = mode;
     }
