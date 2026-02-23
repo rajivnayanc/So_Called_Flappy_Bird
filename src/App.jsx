@@ -146,7 +146,9 @@ const App = () => {
       {gameState === 'START' && (
         <div className="overlay">
           <div className="panel">
-            <h1>Flappy AI</h1>
+            <img src="/favicon.svg" className="popup-logo" alt="Logo" />
+            <h1>So Called Flappy Bird</h1>
+            {mode === 'PLAY' && bestScore > 0 && <h3>Best Score: {bestScore}</h3>}
             <div className="mode-selector">
               <button
                 className={mode === 'PLAY' ? 'active' : ''}
@@ -190,7 +192,9 @@ const App = () => {
       {gameState === 'PAUSED' && (
         <div className="overlay">
           <div className="panel">
+            <img src="/favicon.svg" className="popup-logo" alt="Logo" />
             <h1>Paused</h1>
+            {mode === 'PLAY' && <h3>Best Score: {bestScore}</h3>}
             <button className="start-btn" onClick={() => {
               managerRef.current.start();
               setGameState('RUNNING');
@@ -203,8 +207,12 @@ const App = () => {
       {gameState === 'GAMEOVER' && (
         <div className="overlay">
           <div className="panel">
+            <img src="/favicon.svg" className="popup-logo" alt="Logo" />
             <h1>Game Over</h1>
-            <h2>Score: {score}</h2>
+            <div className="score-display">
+              <h2>Score: {score}</h2>
+              {mode === 'PLAY' && <h3>Best Score: {bestScore}</h3>}
+            </div>
             <button className="start-btn" onClick={startGame}>Play Again</button>
             <button className="mode-btn" onClick={() => switchMode(mode === 'PLAY' ? 'TRAIN' : 'PLAY')}>
               Switch Mode
