@@ -19,6 +19,7 @@ export class FlappyManager extends Engine {
         this.mode = 'PLAY'; // 'PLAY' | 'TRAIN'
         this.onGameOver = null; // Callback when play mode ends
         this.onNewGeneration = null; // Callback when train mode starts new gen
+        this.onTrainScoreChange = null; // Callback when train mode reaches new best score
 
         // Setup engine tick
         this.onTick = (timestamp, ctx) => this.handleTick(timestamp, ctx);
@@ -198,10 +199,14 @@ export class FlappyManager extends Engine {
             // Check best score and save AI weights if inside TRAIN mode
             if (this.mode === 'TRAIN') {
                 const bestDead = deadBirdsThisFrame.reduce((prev, current) => (prev.score > current.score) ? prev : current, { score: -1 });
-                const savedBest = parseInt(localStorage.getItem('flappyBestScore') || '0', 10);
+                const savedBest = parseInt(localStorage.getItem('flappyAIBestScore') || '0', 10);
                 if (bestDead.score >= savedBest && bestDead.w1) {
+                    localStorage.setItem('flappyAIBestScore', bestDead.score.toString());
                     localStorage.setItem('flappyBestW1', JSON.stringify(bestDead.w1));
                     localStorage.setItem('flappyBestW2', JSON.stringify(bestDead.w2));
+                    if (this.onTrainScoreChange) {
+                        this.onTrainScoreChange(bestDead.score);
+                    }
                 }
             }
 

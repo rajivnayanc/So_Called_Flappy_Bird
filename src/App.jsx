@@ -11,14 +11,19 @@ const App = () => {
   const [gameState, setGameState] = useState('START'); // 'START', 'RUNNING', 'GAMEOVER', 'PAUSED'
   const [playAgainstAI, setPlayAgainstAI] = useState(false);
   const [score, setScore] = useState(0);
-  const [bestScore, setBestScore] = useState(0);
+  const [bestPlayScore, setBestPlayScore] = useState(0);
+  const [bestTrainScore, setBestTrainScore] = useState(0);
   const [generation, setGeneration] = useState(1);
 
-  // Load best score on mount
+  // Load best scores on mount
   useEffect(() => {
-    const savedBest = localStorage.getItem('flappyBestScore');
-    if (savedBest) {
-      setBestScore(parseInt(savedBest, 10));
+    const savedPlayBest = localStorage.getItem('flappyBestScore');
+    if (savedPlayBest) {
+      setBestPlayScore(parseInt(savedPlayBest, 10));
+    }
+    const savedTrainBest = localStorage.getItem('flappyAIBestScore');
+    if (savedTrainBest) {
+      setBestTrainScore(parseInt(savedTrainBest, 10));
     }
   }, []);
 
@@ -83,7 +88,7 @@ const App = () => {
     manager.onGameOver = (finalScore) => {
       setGameState('GAMEOVER');
       setScore(finalScore);
-      setBestScore(prevBest => {
+      setBestPlayScore(prevBest => {
         if (finalScore > prevBest) {
           localStorage.setItem('flappyBestScore', finalScore.toString());
           return finalScore;
@@ -96,6 +101,10 @@ const App = () => {
       setGeneration(prev => prev + 1);
       const nextGenPopulation = nextGeneration(deadBirds);
       manager.init(nextGenPopulation);
+    };
+
+    manager.onTrainScoreChange = (newBest) => {
+      setBestTrainScore(newBest);
     };
 
     return () => {
@@ -137,7 +146,7 @@ const App = () => {
         {(gameState === 'RUNNING' || gameState === 'PAUSED') && (
           <button className="exit-btn" onClick={() => switchMode(mode)}>X</button>
         )}
-        <div className="hud-stat">Best Score: {bestScore}</div>
+        <div className="hud-stat">Best Score: {mode === 'PLAY' ? bestPlayScore : bestTrainScore}</div>
         <div className="hud-stat">Score: {score}</div>
         {mode === 'TRAIN' && (
           <div className="hud-stat">Generation: {generation}</div>
@@ -150,7 +159,8 @@ const App = () => {
           <div className="panel">
             <img src={`${import.meta.env.BASE_URL}favicon.svg`} className="popup-logo" alt="Logo" />
             <h1>So Called Flappy Bird</h1>
-            {mode === 'PLAY' && bestScore > 0 && <h3>Best Score: {bestScore}</h3>}
+            {mode === 'PLAY' && bestPlayScore > 0 && <h3>Best Score: {bestPlayScore}</h3>}
+            {mode === 'TRAIN' && bestTrainScore > 0 && <h3>Best AI Score: {bestTrainScore}</h3>}
             <div className="mode-selector">
               <button
                 className={mode === 'PLAY' ? 'active' : ''}
@@ -196,7 +206,8 @@ const App = () => {
           <div className="panel">
             <img src={`${import.meta.env.BASE_URL}favicon.svg`} className="popup-logo" alt="Logo" />
             <h1>Paused</h1>
-            {mode === 'PLAY' && <h3>Best Score: {bestScore}</h3>}
+            {mode === 'PLAY' && <h3>Best Score: {bestPlayScore}</h3>}
+            {mode === 'TRAIN' && <h3>Best AI Score: {bestTrainScore}</h3>}
             <button className="start-btn" onClick={() => {
               managerRef.current.start();
               setGameState('RUNNING');
@@ -213,7 +224,7 @@ const App = () => {
             <h1>Game Over</h1>
             <div className="score-display">
               <h2>Score: {score}</h2>
-              {mode === 'PLAY' && <h3>Best Score: {bestScore}</h3>}
+              {mode === 'PLAY' && <h3>Best Score: {bestPlayScore}</h3>}
             </div>
             <button className="start-btn" onClick={startGame}>Play Again</button>
             <button className="mode-btn" onClick={() => switchMode(mode === 'PLAY' ? 'TRAIN' : 'PLAY')}>
