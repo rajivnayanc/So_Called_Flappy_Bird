@@ -38,18 +38,21 @@ const App = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       if (managerRef.current && gameState === 'RUNNING') {
-        const birds = managerRef.current.getEntities();
-        if (birds.length > 0) {
-          // Find highest score among alive birds
-          let currentScore = 0;
+        const birds = managerRef.current.birds;
+        if (birds && birds.length > 0) {
+          // Find highest score among active birds
+          let maxScore = -1;
           birds.forEach(b => {
             if (mode === 'PLAY') {
-              if (b.label === 'P1' && b.score > currentScore) currentScore = b.score;
+              if (b.label === 'P1' && b.score !== undefined && b.score > maxScore) maxScore = b.score;
             } else {
-              if (b.score && b.score > currentScore) currentScore = b.score;
+              if (b.score !== undefined && b.score > maxScore) maxScore = b.score;
             }
           });
-          setScore(currentScore);
+
+          if (maxScore !== -1) {
+            setScore(prev => Math.max(prev, maxScore));
+          }
         }
       }
     }, 100); // UI update rate
