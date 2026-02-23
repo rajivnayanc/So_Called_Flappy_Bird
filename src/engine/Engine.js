@@ -7,6 +7,8 @@ export class Engine {
         this.entities = [];
         this.animationId = null;
         this.isRunning = false;
+        this.pauseStartTime = 0;
+        this.totalPauseDuration = 0;
         this.onTick = null; // Optional callback per frame
 
         // Handle canvas resize
@@ -42,6 +44,10 @@ export class Engine {
     start() {
         if (!this.isRunning) {
             this.isRunning = true;
+            if (this.pauseStartTime > 0) {
+                this.totalPauseDuration += performance.now() - this.pauseStartTime;
+                this.pauseStartTime = 0;
+            }
             this.animationId = requestAnimationFrame((t) => this.animate(t));
         }
     }
@@ -49,6 +55,7 @@ export class Engine {
     stop() {
         if (this.isRunning) {
             this.isRunning = false;
+            this.pauseStartTime = performance.now();
             cancelAnimationFrame(this.animationId);
             this.animationId = null;
         }
@@ -71,9 +78,11 @@ export class Engine {
 
         this.animationId = requestAnimationFrame((t) => this.animate(t));
 
+        const adjustedTimestamp = timestamp - this.totalPauseDuration;
+
         // Let subclass or external script handle frame logic (e.g. spawns, clearing canvas)
         if (this.onTick) {
-            this.onTick(timestamp, this.ctx);
+            this.onTick(adjustedTimestamp, this.ctx);
         } else {
             this.clearCanvas();
         }
