@@ -1,8 +1,9 @@
 import { Entity } from '../../engine/Entity.js';
 
 export class Pipe extends Entity {
-    constructor(xpos, ypos, length, speed, gap) {
-        super(xpos, ypos, 150, length);
+    constructor(xpos, ypos, length, speed, gap, isMobile = false) {
+        let width = isMobile ? 80 : 150;
+        super(xpos, ypos, width, length);
         this.zIndex = -5;
         this.speed = speed;
         this.gap = gap;

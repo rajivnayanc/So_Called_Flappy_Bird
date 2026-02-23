@@ -38,6 +38,7 @@ export class FlappyManager extends Engine {
         }
         if (this.clickHandler) {
             this.canvas.removeEventListener('mousedown', this.clickHandler);
+            this.canvas.removeEventListener('touchstart', this.clickHandler);
             this.clickHandler = null;
         }
     }
@@ -82,11 +83,16 @@ export class FlappyManager extends Engine {
             };
             window.addEventListener('keydown', this.keydownHandler);
 
-            // Mouse click support for play mode
-            this.clickHandler = () => {
+            // Mouse click/touch support for play mode
+            this.clickHandler = (e) => {
+                // Prevent default behavior for touch to avoid double firing or scrolling
+                if (e.type === 'touchstart') {
+                    e.preventDefault();
+                }
                 if (this.birds[0]) this.birds[0].flap();
             };
             this.canvas.addEventListener('mousedown', this.clickHandler);
+            this.canvas.addEventListener('touchstart', this.clickHandler, { passive: false });
 
         } else if (this.mode === 'TRAIN') {
             const birdCount = population ? population.length : 30;
@@ -104,12 +110,17 @@ export class FlappyManager extends Engine {
     }
 
     generatePillars() {
-        let top_length = Math.round(Math.random() * this.height / 2 + 100);
-        let gap = Math.round(Math.random() * 40 + 180);
+        const isMobile = this.width < 600;
+
+        // Desktop uses old logic (gap ~180-220, top logic), Mobile uses forgiving logic + dynamic gap
+        let gap = isMobile ? Math.max(200, this.height * 0.25) : Math.round(Math.random() * 40 + 180);
+        let top_length = isMobile ? Math.max(50, Math.round(Math.random() * (this.height - gap - 100)))
+            : Math.round(Math.random() * this.height / 2 + 100);
         let bottom_length = this.height - gap - top_length;
 
-        let top = new Pipe(this.width, -5, top_length, 10, gap);
-        let bottom = new Pipe(this.width, this.height + 5 - bottom_length, bottom_length, 10, gap);
+        let speed = isMobile ? 5 : 10;
+        let top = new Pipe(this.width, -5, top_length, speed, gap, isMobile);
+        let bottom = new Pipe(this.width, this.height + 5 - bottom_length, bottom_length, speed, gap, isMobile);
         return [top, bottom];
     }
 
@@ -135,7 +146,8 @@ export class FlappyManager extends Engine {
         }
 
         // Spawn Pipes
-        if (timestamp - this.lastPipeTime > 1000) {
+        const spawnDelay = (this.width < 600) ? 1600 : 1000;
+        if (timestamp - this.lastPipeTime > spawnDelay) {
             const newPipes = this.generatePillars();
             this.pipes.push(...newPipes);
             this.addEntities(newPipes);

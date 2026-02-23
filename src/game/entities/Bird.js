@@ -3,11 +3,13 @@ import { Entity } from '../../engine/Entity.js';
 export class Bird extends Entity {
     constructor(canvasWidth, canvasHeight, color = '#F4D03F') {
         // x, y, width, height (using radius * 2 for width/height)
+        const isMobile = canvasWidth < 600;
         super(canvasWidth / 6, canvasHeight / 2, 50, 50);
         this.zIndex = 10;
         this.canvasHeight = canvasHeight;
-        this.radius = 25;
-        this.gravity = 1;
+        this.radius = isMobile ? 20 : 25;
+        this.gravity = isMobile ? 0.5 : 1;
+        this.flapStrength = isMobile ? -8 : -12;
         this.velocity = 0;
         this.score = 0;
         this.tick = 0;
@@ -70,7 +72,7 @@ export class Bird extends Entity {
     }
 
     flap() {
-        this.velocity = -12;
+        this.velocity = this.flapStrength;
     }
 
     update(ctx) {

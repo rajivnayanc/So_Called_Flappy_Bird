@@ -182,7 +182,7 @@ const App = () => {
               {mode === 'PLAY' ? 'Start Game' : 'Start Training'}
             </button>
 
-            {mode === 'PLAY' && <p className="help-text">Press Space or Click to flap.<br />Press Escape to Pause.</p>}
+            {mode === 'PLAY' && <p className="help-text">Press Space or Click or Tap to flap.<br />Press Escape to Pause.</p>}
           </div>
         </div>
       )}
