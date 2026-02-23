@@ -1,16 +1,16 @@
 // Genetic Algorithm for Flappy Bird Neural Network
 
 export function nextGeneration(savedBirds) {
-    // Sort birds by score/tick (highest first)
-    savedBirds.sort((a, b) => b.score - a.score || b.tick - a.tick);
+    // Sort birds by distance survived (highest first)
+    savedBirds.sort((a, b) => b.tick - a.tick);
 
-    // Calculate fitness
+    // Calculate fitness exponentially based on ticks survived
     let sum = 0;
     for (let bird of savedBirds) {
-        sum += bird.score;
+        sum += Math.pow(bird.tick, 2);
     }
     for (let bird of savedBirds) {
-        bird.fitness = sum === 0 ? 1 / savedBirds.length : bird.score / sum;
+        bird.fitness = Math.pow(bird.tick, 2) / sum;
     }
 
     const nextGen = [];

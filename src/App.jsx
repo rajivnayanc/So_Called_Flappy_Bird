@@ -31,19 +31,25 @@ const App = () => {
           // Find highest score among alive birds
           let currentScore = 0;
           birds.forEach(b => {
-            if (b.score && b.score > currentScore) currentScore = b.score;
+            if (mode === 'PLAY') {
+              if (b.label === 'P1' && b.score > currentScore) currentScore = b.score;
+            } else {
+              if (b.score && b.score > currentScore) currentScore = b.score;
+            }
           });
           setScore(currentScore);
 
           if (currentScore > bestScore) {
             setBestScore(currentScore);
-            localStorage.setItem('flappyBestScore', currentScore.toString());
+            if (mode === 'PLAY') {
+              localStorage.setItem('flappyBestScore', currentScore.toString());
+            }
           }
         }
       }
     }, 100); // UI update rate
     return () => clearInterval(interval);
-  }, [gameState, bestScore]);
+  }, [gameState, bestScore, mode]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

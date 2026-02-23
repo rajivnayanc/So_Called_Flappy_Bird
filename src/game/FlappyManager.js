@@ -47,6 +47,7 @@ export class FlappyManager extends Engine {
         this.cleanup();
         this.clearEntities();
         this.birds = [];
+        this.deadBirds = [];
         this.pipes = [];
         this.clouds = [];
         this.lastPipeTime = 0;
@@ -186,6 +187,9 @@ export class FlappyManager extends Engine {
 
             if (collision) {
                 deadBirdsThisFrame.push(bird);
+                if (this.mode === 'TRAIN') {
+                    this.deadBirds.push(bird);
+                }
                 this.removeEntity(bird);
             }
             return !collision;
@@ -204,7 +208,7 @@ export class FlappyManager extends Engine {
             }
 
             if (this.mode === 'PLAY') {
-                const playerDied = deadBirdsThisFrame.find(b => b.constructor.name === 'Bird');
+                const playerDied = deadBirdsThisFrame.find(b => b.label === 'P1');
                 if (playerDied) {
                     this.stop();
                     if (this.onGameOver) {
@@ -214,7 +218,7 @@ export class FlappyManager extends Engine {
             } else if (this.mode === 'TRAIN' && this.birds.length === 0) {
                 // All birds are dead, handle generation reset externally
                 if (this.onNewGeneration) {
-                    this.onNewGeneration(deadBirdsThisFrame); // Passing the last batch of dead birds for fitness evaluation
+                    this.onNewGeneration(this.deadBirds); // Passing ALL dead birds for the generation
                 }
             }
         }
