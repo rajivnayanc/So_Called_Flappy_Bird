@@ -146,7 +146,7 @@ const App = () => {
       {gameState === 'START' && (
         <div className="overlay">
           <div className="panel">
-            <img src="/favicon.svg" className="popup-logo" alt="Logo" />
+            <img src={`${import.meta.env.BASE_URL}favicon.svg`} className="popup-logo" alt="Logo" />
             <h1>So Called Flappy Bird</h1>
             {mode === 'PLAY' && bestScore > 0 && <h3>Best Score: {bestScore}</h3>}
             <div className="mode-selector">
@@ -192,7 +192,7 @@ const App = () => {
       {gameState === 'PAUSED' && (
         <div className="overlay">
           <div className="panel">
-            <img src="/favicon.svg" className="popup-logo" alt="Logo" />
+            <img src={`${import.meta.env.BASE_URL}favicon.svg`} className="popup-logo" alt="Logo" />
             <h1>Paused</h1>
             {mode === 'PLAY' && <h3>Best Score: {bestScore}</h3>}
             <button className="start-btn" onClick={() => {
@@ -207,7 +207,7 @@ const App = () => {
       {gameState === 'GAMEOVER' && (
         <div className="overlay">
           <div className="panel">
-            <img src="/favicon.svg" className="popup-logo" alt="Logo" />
+            <img src={`${import.meta.env.BASE_URL}favicon.svg`} className="popup-logo" alt="Logo" />
             <h1>Game Over</h1>
             <div className="score-display">
               <h2>Score: {score}</h2>

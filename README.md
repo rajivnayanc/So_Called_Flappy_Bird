@@ -13,7 +13,7 @@
 Welcome to **So Called Flappy Bird**! What started as a simple browser clone has been refactored into a custom-built, lightweight 2D physics engine. The game doesn't just let you play Flappy Bird—it lets you train an artificial intelligence using a Genetic Algorithm to master the game, and then challenge it head-to-head!
 
 <div align="center">
-  <img src="public/demo.webp" alt="AI Training Mode Demo" width="600" />
+  <img src="demo.webp" alt="AI Training Mode Demo" width="600" />
 </div>
 
 ---
