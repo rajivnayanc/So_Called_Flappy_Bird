@@ -1,70 +1,99 @@
-import neural_network from '../utils/neural_network.js';
-import { rgba_val } from '../utils/utils.js';
+import { Entity } from '../../engine/Entity.js';
 
-export class Bird {
-    constructor(canvasWidth, canvasHeight) {
+export class Bird extends Entity {
+    constructor(canvasWidth, canvasHeight, color = '#F4D03F') {
+        // x, y, width, height (using radius * 2 for width/height)
+        super(canvasWidth / 6, canvasHeight / 2, 50, 50);
+        this.zIndex = 10;
         this.canvasHeight = canvasHeight;
-        this.y = canvasHeight / 2;
-        this.x = canvasWidth / 6;
         this.radius = 25;
         this.gravity = 1;
         this.velocity = 0;
         this.score = 0;
         this.tick = 0;
-        this.x1 = 0;
-        this.x2 = 0;
-        this.w1 = [];
-        this.w2 = [];
-        this.color = rgba_val();
-
-        for (let i = 0; i < 18; i++) this.w1.push(Math.random() * 2 - 1);
-        for (let i = 0; i < 6; i++) this.w2.push(Math.random() * 2 - 1);
+        this.color = color;
+        this.label = null; // Display name
     }
 
     draw(ctx) {
+        // Body
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
         ctx.fillStyle = this.color;
         ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#000';
+        ctx.stroke();
+
+        // Eye
+        ctx.beginPath();
+        ctx.arc(this.x + 10, this.y - 12, 5, 0, Math.PI * 2, false);
+        ctx.fillStyle = '#FFF';
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(this.x + 12, this.y - 12, 2, 0, Math.PI * 2, false);
+        ctx.fillStyle = '#000';
+        ctx.fill();
+
+        // Beak
+        ctx.beginPath();
+        ctx.moveTo(this.x + 15, this.y - 5);
+        ctx.lineTo(this.x + 35, this.y);
+        ctx.lineTo(this.x + 15, this.y + 10);
+        ctx.fillStyle = '#FF8C00';
+        ctx.fill();
+        ctx.stroke();
+
+        // Wing
+        ctx.beginPath();
+        ctx.ellipse(this.x - 5, this.y + 5, 12, 8, Math.PI / 8, 0, Math.PI * 2);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fill();
+        ctx.stroke();
+
+        // Label
+        if (this.label) {
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+
+            // Stroke for visibility against any background
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.strokeText(this.label, this.x, this.y - this.radius - 15);
+
+            // Text fill
+            ctx.fillStyle = '#000000';
+            ctx.fillText(this.label, this.x, this.y - this.radius - 15);
+        }
     }
 
     flap() {
         this.velocity = -12;
     }
 
-    think() {
-        let pred = neural_network(this.x1, this.x2, this.w1, this.w2);
-        // Handle mathjs matrix output
-        let val = (pred._data) ? pred._data[0] : (Array.isArray(pred) ? pred[0] : pred);
-        if (val > 0.5) {
-            this.flap();
-        }
-    }
-
-    update(ctx, pipes) {
+    update(ctx) {
         this.draw(ctx);
-        
+
         if ((this.y + this.velocity + this.radius) >= this.canvasHeight) {
             this.velocity = 0;
         }
-        
+
         this.y += this.velocity;
         this.velocity += this.gravity;
 
-        for (let i = 0; i < pipes.length; i++) {
-            let pipe = pipes[i];
-            if (this.x < pipe.xpos + pipe.width) {
-                this.x1 = pipe.xpos + pipe.width - this.x;
-                if (pipe.ypos <= 0) {
-                    this.x2 = this.y - (pipe.ypos + pipe.length + pipe.gap / 2);
-                } else {
-                    this.x2 = pipe.ypos + pipe.gap / 2 - this.y;
-                }
-                break;
-            }
-        }
-
         this.tick += 1;
         if (this.tick % 20 === 0) this.score += 1;
+    }
+
+    // Custom collision bounds for circle vs rect
+    getBounds() {
+        return {
+            x: this.x - this.radius,
+            y: this.y - this.radius,
+            width: this.radius * 2,
+            height: this.radius * 2
+        };
     }
 }

@@ -1,10 +1,10 @@
-export class Cloud {
+import { Entity } from '../../engine/Entity.js';
+
+export class Cloud extends Entity {
     constructor(x, y, width, speed, img) {
+        super(x, y, width, 0.6 * width);
+        this.zIndex = -10;
         this.cloud_img = img;
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = 0.6 * this.width;
         this.speed = speed;
     }
 
@@ -17,5 +17,9 @@ export class Cloud {
     update(ctx) {
         this.x -= this.speed / 2;
         this.draw(ctx);
+
+        if (this.x + this.width < 0) {
+            this.markedForDeletion = true;
+        }
     }
 }

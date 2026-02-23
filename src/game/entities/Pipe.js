@@ -1,24 +1,34 @@
-export class Pipe {
+import { Entity } from '../../engine/Entity.js';
+
+export class Pipe extends Entity {
     constructor(xpos, ypos, length, speed, gap) {
+        super(xpos, ypos, 150, length);
+        this.zIndex = -5;
+        this.speed = speed;
+        this.gap = gap;
+        // Legacy props for compatibility (if needed)
         this.ypos = ypos;
         this.xpos = xpos;
         this.length = length;
-        this.speed = speed;
-        this.width = 150;
-        this.gap = gap;
     }
 
     draw(ctx) {
         ctx.save();
         ctx.fillStyle = '#3DE80E';
-        ctx.fillRect(this.xpos, this.ypos, this.width, this.length);
+        ctx.fillRect(this.x, this.y, this.width, this.height);
         ctx.fillStyle = '#6FFFD8';
-        ctx.fillRect(this.xpos + 5, this.ypos + 5, this.width - 10, this.length - 10);
+        ctx.fillRect(this.x + 5, this.y + 5, this.width - 10, this.height - 10);
         ctx.restore();
     }
 
     update(ctx) {
-        this.xpos -= this.speed;
+        this.x -= this.speed;
+        this.xpos = this.x; // Keep sync
         this.draw(ctx);
+
+        // Mark for deletion if off screen
+        if (this.x + this.width < 0) {
+            this.markedForDeletion = true;
+        }
     }
 }
