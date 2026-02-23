@@ -10,7 +10,7 @@ export class FlappyManager extends Engine {
 
         // Native JavaScript Image loading
         this.cloudImg = new Image();
-        this.cloudImg.src = '/cloud.png';
+        this.cloudImg.src = `${import.meta.env.BASE_URL}cloud.png`;
 
         this.birds = [];
         this.pipes = [];
