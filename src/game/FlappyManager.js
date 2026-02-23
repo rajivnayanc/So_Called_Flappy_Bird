@@ -66,7 +66,8 @@ export class FlappyManager extends Engine {
                     try {
                         const w1 = JSON.parse(w1Str);
                         const w2 = JSON.parse(w2Str);
-                        const memoryThreshold = threshStr ? parseFloat(threshStr) : aiThreshold;
+                        // If threshStr is undefined/null (from an older save), default to 0.5 safely instead of parsing NaN
+                        const memoryThreshold = threshStr ? parseFloat(threshStr) : 0.5;
 
                         const aiBird = new AIBird(this.width, this.height, w1, w2, memoryThreshold);
                         aiBird.color = 'rgba(150, 0, 255, 0.7)'; // Distinct purple opponent

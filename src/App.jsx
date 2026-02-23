@@ -14,6 +14,7 @@ const App = () => {
   const [bestPlayScore, setBestPlayScore] = useState(0);
   const [bestTrainScore, setBestTrainScore] = useState(0);
   const [aiThreshold, setAiThreshold] = useState(0.5); // '0.5', '0.7', '0.9'
+  const aiThresholdRef = useRef(aiThreshold);
   const [generation, setGeneration] = useState(1);
 
   // Load best scores on mount
@@ -27,6 +28,11 @@ const App = () => {
       setBestTrainScore(parseInt(savedTrainBest, 10));
     }
   }, []);
+
+  // Sync ref with state
+  useEffect(() => {
+    aiThresholdRef.current = aiThreshold;
+  }, [aiThreshold]);
 
   // Sync score state with manager
   useEffect(() => {
@@ -101,7 +107,7 @@ const App = () => {
     manager.onNewGeneration = (deadBirds) => {
       setGeneration(prev => prev + 1);
       const nextGenPopulation = nextGeneration(deadBirds);
-      manager.init(nextGenPopulation, false, aiThreshold);
+      manager.init(nextGenPopulation, false, aiThresholdRef.current);
     };
 
     manager.onTrainScoreChange = (newBest) => {
