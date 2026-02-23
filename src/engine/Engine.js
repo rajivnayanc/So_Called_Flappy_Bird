@@ -8,6 +8,15 @@ export class Engine {
         this.animationId = null;
         this.isRunning = false;
         this.onTick = null; // Optional callback per frame
+
+        // Handle canvas resize
+        this.resizeHandler = () => {
+            if (this.canvas) {
+                this.width = this.canvas.width;
+                this.height = this.canvas.height;
+            }
+        };
+        window.addEventListener('resize', this.resizeHandler);
     }
 
     addEntity(entity) {
@@ -33,7 +42,7 @@ export class Engine {
     start() {
         if (!this.isRunning) {
             this.isRunning = true;
-            this.animate(0);
+            this.animationId = requestAnimationFrame((t) => this.animate(t));
         }
     }
 
@@ -43,6 +52,11 @@ export class Engine {
             cancelAnimationFrame(this.animationId);
             this.animationId = null;
         }
+    }
+
+    destroy() {
+        this.stop();
+        window.removeEventListener('resize', this.resizeHandler);
     }
 
     clearCanvas() {

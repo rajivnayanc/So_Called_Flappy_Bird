@@ -24,11 +24,11 @@ export class AIBird extends Bird {
     }
 
     think(pipes) {
-        // Find closest pipe
+        // Find closest top pipe (top pipe is always first in the pairs generated)
         let closestPipe = null;
         for (let i = 0; i < pipes.length; i++) {
             let pipe = pipes[i];
-            if (this.x < pipe.xpos + pipe.width) {
+            if (pipe.ypos <= 0 && this.x < pipe.xpos + pipe.width) {
                 closestPipe = pipe;
                 break;
             }
@@ -36,11 +36,9 @@ export class AIBird extends Bird {
 
         if (closestPipe) {
             this.x1 = closestPipe.xpos + closestPipe.width - this.x;
-            if (closestPipe.ypos <= 0) { // Top pipe
-                this.x2 = this.y - (closestPipe.ypos + closestPipe.length + closestPipe.gap / 2);
-            } else { // Bottom pipe
-                this.x2 = closestPipe.ypos + closestPipe.gap / 2 - this.y;
-            }
+            // The uniform gap center is based on the top pipe's bottom edge + gap / 2
+            let gapCenterY = closestPipe.ypos + closestPipe.length + closestPipe.gap / 2;
+            this.x2 = this.y - gapCenterY;
         }
 
         let pred = neural_network(this.x1, this.x2, this.w1, this.w2);

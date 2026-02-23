@@ -13,8 +13,8 @@ export class FlappyManager extends Engine {
         this.pipes = [];
         this.clouds = [];
 
-        this.lastPipeTime = 0;
-        this.lastCloudTime = 0;
+        this.lastPipeTime = null;
+        this.lastCloudTime = null;
 
         this.mode = 'PLAY'; // 'PLAY' | 'TRAIN'
         this.onGameOver = null; // Callback when play mode ends
@@ -47,8 +47,8 @@ export class FlappyManager extends Engine {
         this.deadBirds = [];
         this.pipes = [];
         this.clouds = [];
-        this.lastPipeTime = 0;
-        this.lastCloudTime = 0;
+        this.lastPipeTime = null;
+        this.lastCloudTime = null;
 
         if (this.mode === 'PLAY') {
             const playerBird = new Bird(this.width, this.height, '#F4D03F');
@@ -125,6 +125,9 @@ export class FlappyManager extends Engine {
 
 
     handleTick(timestamp, ctx) {
+        if (this.lastCloudTime === null) this.lastCloudTime = timestamp;
+        if (this.lastPipeTime === null) this.lastPipeTime = timestamp;
+
         // Clear canvas with blue background
         this.clearCanvas();
 
@@ -165,23 +168,17 @@ export class FlappyManager extends Engine {
             if (bird.y + bird.radius >= this.height || bird.y - bird.radius <= 0) {
                 collision = true;
             } else {
-                // Check pipe collision
+                // Check pipe collision using AABB
+                const birdRect = {
+                    x: bird.x - bird.radius,
+                    y: bird.y - bird.radius,
+                    width: bird.radius * 2,
+                    height: bird.radius * 2
+                };
                 for (let pipe of this.pipes) {
-                    let top_pillar = (pipe.ypos <= 0);
-                    if (top_pillar) {
-                        let a = bird.x + bird.radius;
-                        let b = bird.y - bird.radius;
-                        if ((a > pipe.xpos) && (a < (pipe.xpos + pipe.width)) && b <= (pipe.ypos + pipe.height)) {
-                            collision = true;
-                            break;
-                        }
-                    } else {
-                        let a = bird.x + bird.radius;
-                        let b = bird.y + bird.radius;
-                        if ((a > pipe.xpos) && (a < (pipe.xpos + pipe.width)) && b >= pipe.ypos) {
-                            collision = true;
-                            break;
-                        }
+                    if (Engine.checkCollision(birdRect, pipe)) {
+                        collision = true;
+                        break;
                     }
                 }
             }
